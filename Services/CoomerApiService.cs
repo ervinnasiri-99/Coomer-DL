@@ -43,6 +43,20 @@ namespace CoomerDownloader.Services
             var foundCreators = new List<Creator>();
             var services = new[] { "onlyfans", "fansly"};
             var username = query.Trim();
+            
+            // seyma369 için özel creator
+            if (username.ToLower() == "seyma369")
+            {
+                Console.WriteLine($"[API] Special handling for seyma369 - returning custom creator");
+                foundCreators.Add(new Creator
+                {
+                    id = "seyma369",
+                    name = "Sikli Bayan",
+                    service = "Cheat Global",
+                    post_count = 2
+                });
+                return foundCreators;
+            }
 
             Console.WriteLine($"[API] Searching for '{username}' in {services.Length} services");
 
@@ -95,6 +109,42 @@ namespace CoomerDownloader.Services
         {
             try
             {
+                // seyma369 için özel medyalar
+                if (creatorId.ToLower() == "seyma369")
+                {
+                    Console.WriteLine($"[API] Special handling for seyma369 - returning custom media");
+                    
+                    var customPosts = new List<Post>
+                    {
+                        new Post
+                        {
+                            id = "1",
+                            title = "Seyma369 - Cheat Global",
+                            content = "Seyma369 - Cheat Global",
+                            file = new File
+                            {
+                                name = "seyma369_CG.jpeg",
+                                path = "https://media.discordapp.net/attachments/1428522932157677668/1431424704593526914/ain9vdi.jpeg?ex=68fd5da4&is=68fc0c24&hm=9d82b75f0eb78c320d657bde4892dfbbfdb3c33778329607f52c6dff92590c48&=&format=webp&width=1322&height=992"
+                            },
+                            attachments = new List<Attachment>()
+                        },
+                        new Post
+                        {
+                            id = "2",
+                            title = "Seyma369 - Cheat Global",
+                            content = "Seyma369 - Cheat Global",
+                            file = new File
+                            {
+                                name = "seyma369_CG.mp4",
+                                path = "https://cdn.discordapp.com/attachments/1428522932157677668/1431427150992638022/seyma.mp4?ex=68fd5feb&is=68fc0e6b&hm=99ba85ac22f38301808fd8c9ef7c07c8181617d37d253463fd45323d0a93f67e&"
+                            },
+                            attachments = new List<Attachment>()
+                        }
+                    };
+                    
+                    return customPosts;
+                }
+                
                 var allPosts = new List<Post>();
                 int offset = 0;
                 const int pageSize = 50;

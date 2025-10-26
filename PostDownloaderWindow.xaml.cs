@@ -220,6 +220,7 @@ namespace CoomerDownloader
                 using (var client = new HttpClient())
                 {
                     client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36");
+                    client.Timeout = TimeSpan.FromMinutes(5); // Timeout süresini artır
 
                     foreach (var file in allFilesToDownload)
                     {
@@ -238,7 +239,10 @@ namespace CoomerDownloader
                                     return;
 
                                 var filePath = Path.Combine(downloadFolder, file.name);
-                                var fileUrl = $"https://coomer.st{file.path}";
+                                // Eğer path zaten tam bir URL ise (https:// ile başlıyorsa) direkt kullan
+                                var fileUrl = file.path.StartsWith("http://") || file.path.StartsWith("https://") 
+                                    ? file.path 
+                                    : $"https://coomer.st{file.path}";
 
                                 var fileBytes = await client.GetByteArrayAsync(fileUrl, _cancellationTokenSource.Token);
                                 await System.IO.File.WriteAllBytesAsync(filePath, fileBytes, _cancellationTokenSource.Token);
@@ -271,9 +275,10 @@ namespace CoomerDownloader
                             }
                         }));
                     }
+                    
+                    // HttpClient dispose edilmeden önce tüm task'ların tamamlanmasını bekle
+                    await Task.WhenAll(downloadTasks);
                 }
-
-                await Task.WhenAll(downloadTasks);
 
                 if (_cancellationTokenSource.Token.IsCancellationRequested)
                 {
